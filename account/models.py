@@ -21,7 +21,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, username, password, is_superuser=False):
+    def create_user(self, email, username, password, role, is_superuser=False):
         if not email:
             raise ValueError(_('Email is Required.'))
         if not password:
@@ -29,6 +29,7 @@ class UserManager(BaseUserManager):
         user = self.model(
             username=username,
             email=email,
+            role=role,
             is_superuser=is_superuser
         )
         user.set_password(password)
@@ -42,6 +43,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         (MALE, _('Male')),
         (FEMALE, _('Female')),
     )
+    BASIC_USER = 'BUR'
+    PACER_SUPERADMIN = 'PSA'
+    GROUP_CHOICE = (
+        (BASIC_USER, _('Basic User')),
+        (PACER_SUPERADMIN, _('Pacer Superadmin')),
+    )
     username     = models.CharField(max_length=255, null=True, unique=True, verbose_name=_('Username'))
     fullname     = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('Full Name'))
     gender       = models.CharField(max_length=1, null=True, blank=True, choices=GENDER_CHOICE, default=None, verbose_name=_('Gender'))
@@ -53,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False, verbose_name=_('Is Superuser?'))
     is_admin     = models.BooleanField(default=False, verbose_name=_('Is Admin?'))
     is_active    = models.BooleanField(default=True, verbose_name=_('Is Active?'))
+    role         = models.CharField(max_length=3, null=True, blank=True, choices=GROUP_CHOICE, default=None, verbose_name=_('Role'))
 
     objects = UserManager()
 

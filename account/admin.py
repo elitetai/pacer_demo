@@ -10,7 +10,8 @@ from account.models import User
 
 class UserCreationForm(forms.ModelForm):
     username  = forms.CharField()
-    email     = forms.EmailField(required=True)
+    email     = forms.CharField(required=True)
+    role      = forms.ChoiceField(choices=User.GROUP_CHOICE)
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
@@ -69,22 +70,22 @@ class UserChangeForm(forms.ModelForm):
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ('email', 'username', 'gender', 'score', 'is_admin')
-    list_filter = ('gender', 'is_admin', 'is_active',)
+    list_display = ('email', 'username', 'gender', 'score', 'role',)
+    list_filter = ('gender', 'role', 'is_active',)
 
     fieldsets = (
         (None, {'fields': ('email',)}),
-        ('Personal info', {'fields': ('username','fullname', 'gender', 'dob', 'score', 'avatar', 'avatar_preview')}),
-        ('Permissions', {'fields': ('is_admin', 'groups')}),
+        ('Personal info', {'fields': ('username','fullname', 'gender', 'dob', 'score', 'avatar', 'avatar_preview',)}),
+        ('Permissions', {'fields': ('is_admin', 'role',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username', 'password1', 'password2'),
+            'fields': ('email', 'username', 'password1', 'password2', 'role', 'is_admin',),
         }),
     )
-    search_fields = ('username', 'fullname', 'email', 'score')
-    readonly_fields = ('created_at', 'is_active', 'avatar_preview')
+    search_fields = ('username', 'fullname', 'email', 'score',)
+    readonly_fields = ('created_at', 'is_active', 'avatar_preview',)
 
     def get_queryset(self, request):
         qs = super(UserAdmin, self).get_queryset(request)
