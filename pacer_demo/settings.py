@@ -182,38 +182,51 @@ REST_FRAMEWORK = {
 #     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 # }
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'formatters': {
-#         'verbose': {
-#             'format': '{levelname} {asctime} {module} {filename}:{lineno:d} {process:d} {thread:d} {message}',
-#             'style': '{'
-#         },
-#         'simple': {
-#             'format': '{levelname} {asctime} {module} {message}',
-#             'style': '{'
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'simple',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#             'propagate': False,
-#         },
-#         'job_portal': {
-#             'handlers': ['console'],
-#             'level': 'DEBUG',
-#         },
-#     }
-# }
+LOG_FILE_PATH = config('LOG_FILE_PATH')
+LOG_FILENAME = 'pacer.log'
+if not os.path.exists(MEDIA_ROOT + LOG_FILE_PATH):
+    os.makedirs(MEDIA_ROOT + LOG_FILE_PATH)
+    with open(os.path.join(MEDIA_ROOT + LOG_FILE_PATH, LOG_FILENAME), 'w') as fp:
+        pass
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {filename}:{lineno:d} {process:d} {thread:d} {message}',
+            'style': '{'
+        },
+        'simple': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'pacer_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(MEDIA_ROOT + LOG_FILE_PATH, LOG_FILENAME),
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'pacer_demo': {
+            'handlers': ['console','pacer_file'],
+            'level': 'DEBUG',
+        },
+    }
+}
 
 # # Celery
 # CELERY_RESULT_BACKEND    = 'redis://localhost:6379'

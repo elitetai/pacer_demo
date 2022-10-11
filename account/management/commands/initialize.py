@@ -1,3 +1,6 @@
+# import os
+
+# from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
@@ -13,7 +16,7 @@ PACER_SUPERADMIN_MODEL = ['User', 'DailyRecord']
 PACER_SUPERADMIN_PERMISSION = ['view', 'add', 'delete', 'change']
 
 class Command(BaseCommand):
-    help = 'Load initial permission data into DB'
+    help = 'Load permission data into DB and initialize directories.'
 
     def create_group_and_permission(self, group, models, permissions):
         new_group, _ = Group.objects.get_or_create(name=group)
@@ -35,3 +38,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.create_group_and_permission(BASIC_USER_GROUP, BASIC_USER_MODEL, BASIC_USER_PERMISSION)
         self.create_group_and_permission(PACER_SUPERADMIN_GROUP, PACER_SUPERADMIN_MODEL, PACER_SUPERADMIN_PERMISSION)
+
+        # if not os.path.exists(settings.MEDIA_ROOT + settings.LOG_FILE_PATH):
+        #     os.makedirs(settings.MEDIA_ROOT + settings.LOG_FILE_PATH)
+        #     print(f'Creating directory to {settings.MEDIA_ROOT}{settings.LOG_FILE_PATH}.')
+        # else:
+        #     print(f'Directory to {settings.MEDIA_ROOT}{settings.LOG_FILE_PATH} has already exists.')

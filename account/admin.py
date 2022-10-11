@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
@@ -98,7 +99,32 @@ class UserAdmin(BaseUserAdmin):
 
     avatar_preview.short_description = 'Avatar Preview'
 
+class MonitorLog(admin.ModelAdmin):
+    list_display = ('action_time', 'user', 'content_type',
+                    'get_change_message', 'object_repr', 'action_flag', )
+    search_fields = [ 'object_repr','change_message']
+    readonly_fields = ('get_change_message',)
+    exclude = ('change_message', )
+    list_filter = ['action_time', 'user', 'content_type']
+    ordering = ('-action_time',)
+    
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return True
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def get_change_message(self, obj):
+        return obj.get_change_message()
+
 admin.site.site_header = "Pacer Demo Admin Portal"  
 admin.site.site_title  = "Pacer Demo Admin Portal" 
 admin.site.index_title = "Pacer Demo Admin Portal" 
 admin.site.register(User, UserAdmin)
+admin.site.register(LogEntry, MonitorLog)
