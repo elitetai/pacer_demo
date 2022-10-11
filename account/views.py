@@ -12,8 +12,6 @@ from account.serializers import GetScoreSerializer
 
 logger = logging.getLogger('pacer_demo')
 
-# get username / email + score
-
 # get_score
 class GetScoreView(generics.UpdateAPIView):
     """
@@ -29,6 +27,9 @@ class GetScoreView(generics.UpdateAPIView):
         except Exception:
             logger.warning(f"User ID#[{self.request.data.get('user_id')}] is unrecognised or not provided.")
             raise serializers.ValidationError("User ID is unrecognised or not provided.")
+
+        if not self.request.data.get('score') and not self.request.data.get('score') == 0:
+            raise serializers.ValidationError("Score is missing!")
         return qs
 
     def update(self, request, *args, **kwargs):
