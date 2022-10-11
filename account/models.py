@@ -2,8 +2,9 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.core.validators import MinValueValidator
 from django.db import models
-from django.utils.html import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 
@@ -54,11 +55,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     gender       = models.CharField(max_length=1, null=True, blank=True, choices=GENDER_CHOICE, default=None, verbose_name=_('Gender'))
     dob          = models.DateField(null=True, blank=True, verbose_name=_('Date of Birth'))
     email        = models.EmailField(max_length=255, unique=True, verbose_name=_('Email'))
-    score        = models.IntegerField(null=True, blank=True, verbose_name='Score')
+    score        = models.IntegerField(null=True, blank=True, default=0, validators=[MinValueValidator(0)], verbose_name='Score')
     avatar       = models.ImageField(upload_to=avatar_directory_path, null=True, blank=True, verbose_name=_('Avatar'))
     created_at   = models.DateTimeField(verbose_name=_('Created At'), auto_now_add=True)
     is_superuser = models.BooleanField(default=False, verbose_name=_('Is Superuser?'))
-    is_admin     = models.BooleanField(default=False, verbose_name=_('Is Admin?'))
     is_active    = models.BooleanField(default=True, verbose_name=_('Is Active?'))
     role         = models.CharField(max_length=3, null=True, blank=True, choices=GROUP_CHOICE, default=None, verbose_name=_('Role'))
 
@@ -76,10 +76,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         
     @property
     def is_staff(self):
-        return self.is_admin or self.is_superuser
+        return self.role in [self.PACER_SUPERADMIN] or self.is_superuser
 
     @property
     def avatar_preview(self):
         if self.avatar:
-            return mark_safe('<img src="{}" width="300" height="300" />'.format(self.avatar.url))
+            return format_html('<img src="{}" width="300" height="300" />'.format(self.avatar.url))
         return "-"
