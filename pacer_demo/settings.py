@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 
-# from celery.schedules import crontab
-# from datetime import timedelta
 from decouple import config
 from pathlib import Path
 
@@ -228,34 +226,6 @@ LOGGING = {
         },
     }
 }
-
-# # Celery
-# CELERY_RESULT_BACKEND    = 'redis://localhost:6379'
-# CELERY_ACCEPT_CONTENT    = ['application/json']
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TASK_SERIALIZER   = 'json'
-# # BROKER_URL               = 'redis://localhost:6379'
-
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'
-# CELERY_TIMEZONE = 'Asia/Kuala_Lumpur'
-# CELERY_BEAT_SCHEDULE = {
-#     'third_party_api_call_cron_job': {
-#         'task': 'job_portal.tasks.third_party_api_call_cron_job',
-#         # 'schedule': timedelta(seconds=60),
-#         'schedule': crontab(minute=0, hour=2),
-#     }
-# }
-
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': 'redis://127.0.0.1:6379/',
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#         }
-#     }
-# }
-# CACHE_TTL = 60 * 5
 
 # AWS S3 bucket
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
